@@ -48,15 +48,15 @@
     - `npx`コマンドは、`node.js`に入っているコマンドである。`node.js`は、本来ブラウザ上でしか動作しないJavaScriptをPC上で動かすことのできる「実行環境」であり、今日のウェブ開発で主流となっている。PCにインストールされていない場合はここからインストールすること。https://nodejs.org/ja
     - "http-server"をインストールしてよいか許可を求められた場合は、許可する。
 
-1. 表示されたアドレスにブラウザでアクセスし、ウェブページが表示されるかどうかを確認する。多くの場合 `http://127.0.0.1:8080`になると思われる。また、`http://localhost:8080`でもアクセスできるかどうかを確かめる。以降は数字（IPアドレス）直書きの方ではなく、こちらの"localhost"アドレスを用いる。
+1. 表示されたアドレスにブラウザでアクセスし、ウェブページが表示されるかどうかを確認する。多くの場合 [http://127.0.0.1:8080](http://127.0.0.1)になると思われる。また、[http://localhost:8080](http://localhost:8080)でもアクセスできるかどうかを確かめる。以降は数字（IPアドレス）直書きの方ではなく、こちらの"localhost"アドレスを用いる。
 
 ### Tips
 
 - ローカルサーバーとは何か。普通インターネットのIPアドレスを用いた通信は、アクセス元である「クライアント」（=PC）と、「サーバー」の間で行われる。すなわち、２つの別のマシン間の通信となる。ローカルサーバーは、**クライアントPC**上に作られ、自分自身を指す特別なアドレス（127.0.0.1 == "localhost"）に設置される特別なサーバーで、いわばPCの「独り言」を可能にする。（クライアントはあたかも別マシンのサーバーと通信しているように見せて、その実その通信先も自分自身であるということ。）開発中に２つのマシンを触るのは面倒この上ないので、ローカルサーバーを用いてWebアプリの開発を行い、完成したら別マシンの本番サーバーに配置する、という開発フローを行うことが多い。
 - `npx`コマンドによって、「node module（ノード　モジュール）」と呼ばれるJavaScriptで書かれた公開パッケージ（ライブラリ）を一時的にインストールし、実行できる。これらのモジュールは`node.js`に同梱されている`npm`という名前のパッケージ管理システムで管理される。`http-server`はnpmで管理できる公開パッケージの一つであり、同時に、そのパッケージに含まれるコマンドの名前でもある。(https://www.npmjs.com/package/http-server)　今回はこのライブラリによって、サーバー側のコードを一切書くことなく、ローカルサーバーを立てることができている。興味があればこのライブラリなしでローカルサーバーを自前で書いてみるのも良い勉強になる。
 - 今回は使用しないが、`npm`コマンドというのもある。こちらはパッケージをPCにインストールしたり、アンインストールしたりするのに使う。
-- URLの構造の基本的な知識は得ておくこと。https://developer.mozilla.org/ja/docs/Learn/Common_questions/Web_mechanics/What_is_a_URL
-- なぜStep1の"Fileスキームを使った表示ではなく、わざわざローカルサーバーが必要なのか。のちに出てくるAPIのコールにおいて、その返答を受け取るためには「"https"スキームか、"http://localhost"にページがホストされていること」が必須となるためである。
+- URLの構造の基本的な知識は得ておくこと。[What is a URL | MDN](https://developer.mozilla.org/ja/docs/Learn/Common_questions/Web_mechanics/What_is_a_URL)
+- なぜStep1の"Fileスキームを使った表示ではなく、わざわざローカルサーバーが必要なのか。のちに出てくるAPIのコールにおいて、その返答を受け取るためには「"https"スキームか、`http://localhost`にページがホストされていること」が必須となるためである。
 - ちなみに、ローカルサーバーはコマンド上で`Ctrl + C`で止められる。
 
 ## Step 3: この課題で行うAPIコールの全体像を理解する
@@ -66,14 +66,14 @@
 - [Microsoft Identity Platform](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-overview): (login.microsoftonline.com) - Microsoft Account についての認証情報を管理しているサービス。
 - [Microsoft Graph](https://learn.microsoft.com/ja-jp/graph/overview): (graph.microsoft.com) - Microsoft 365 (ユーザーデータ、Word、メール、OneDrive、等々) のデータを管理しているサービス。
 
-Microsoft Graph の保持しているデータにアクセスするためには、Microsoft Identitiy Platform が発行する、アクセス許可「トークン」（token, 有効期限付のパスワードのようなもの）が必要になる。この「トークン」を得るためには様々な方法が提供されているが、今回は「OAuth2.0 認証コードフロー」に従う。https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow を参照。このフローは以下の２ステップからなる。
+Microsoft Graph の保持しているデータにアクセスするためには、Microsoft Identitiy Platform が発行する、アクセス許可「トークン」（token, 有効期限付のパスワードのようなもの）が必要になる。この「トークン」を得るためには様々な方法が提供されているが、今回は「OAuth2.0 認証コードフロー」に従う。[v2 oauth2 code flow | MS docs](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow) を参照。このフローは以下の２ステップからなる。
 
 1. ユーザーを Microsoft Identity Platform の「ログインページ」にリダイレクト（誘導）し、Web アプリがユーザーのデータにアクセスすることを許可させる。ユーザーがアクセスを許可すると、Microsoft Identity Platform はユーザーをWebアプリのページへとリダイレクトする。その際「認証コード」と呼ばれるユーザー許可が降りた"証"をWeb アプリに渡す。（はいわば「トークン発行許可証」である。）
 1. Web アプリは、 Microsoft Identity Platform に「トークン」の発行をリクエストする。先ほどの「認証コード」を共に送信する必要がある。Microsoft Identity Platform は「トークン」をWeb アプリに返信する。
 
 ### Tips
 
-- この、「ユーザーが認証サービスのページに移動し、その認証サービス上でログインを行い、アプリケーションは認証サービスから発行されたトークンを用いて別サービスのリソースにアクセスする」方式を定めた標準を「OAuth」という。https://datatracker.ietf.org/doc/html/rfc6749　この方式が登場する前は、アプリケーションが別サービスのリソースにアクセスしたければ、その別サービスのパスワードをアプリ上で入力してもらい、保持しなくてはならなかった。（例えば、TwitterのAPIにアクセスしたければ、ユーザーにTwitterのパスワードをアプリ上で入れてもらい、それをアプリ代わりに用いてアクセスする、など。Twitter以外のアプリケーションがTwitterのパスワードを知っていることになり、危険であった。）また、別サービスのリソースを使用していなくても、アプリがユーザーログインを実装するためには、最初にそのアプリ用のパスワードをユーザーに作成してもらい、ユーザーに覚えておいてもらうと同時に、アプリ側もパスワードを安全に覚えておく必要があった。このOAuth認証方式では、ユーザーはWebアプリではなく認証サービス上でログインを行うため、Webアプリは他サービスのパスワード等を管理する必要が一切ない。（Webアプリは他サービスのパスワードではなく、発行されるトークンを使ってアクセスを行う。）また、パスワードをそのアプリ用に作ってもらう必要もない。（Webアプリはトークンを用いて認証サービスのユーザーIDを取得でき、そのユーザーIDにデータを結び付けられる。）最近よく見る「Googleでログイン」「Twitterでログイン」「FaceBookでログイン」「Microsoft Accoutでログイン」などがOAuth認証の例。例えば、「Googleでログイン」を用いると、Googleの認証サービスを用いて、GoogleのパスワードでそのWebアプリに（アカウントを作らずとも）ログインできる。
+- この、「ユーザーが認証サービスのページに移動し、その認証サービス上でログインを行い、アプリケーションは認証サービスから発行されたトークンを用いて別サービスのリソースにアクセスする」方式を定めた標準を「[OAuth](https://datatracker.ietf.org/doc/html/rfc6749)」という。この方式が登場する前は、アプリケーションが別サービスのリソースにアクセスしたければ、その別サービスのパスワードをアプリ上で入力してもらい、保持しなくてはならなかった。（例えば、TwitterのAPIにアクセスしたければ、ユーザーにTwitterのパスワードをアプリ上で入れてもらい、それをアプリ代わりに用いてアクセスする、など。Twitter以外のアプリケーションがTwitterのパスワードを知っていることになり、危険であった。）また、別サービスのリソースを使用していなくても、アプリがユーザーログインを実装するためには、最初にそのアプリ用のパスワードをユーザーに作成してもらい、ユーザーに覚えておいてもらうと同時に、アプリ側もパスワードを安全に覚えておく必要があった。このOAuth認証方式では、ユーザーはWebアプリではなく認証サービス上でログインを行うため、Webアプリは他サービスのパスワード等を管理する必要が一切ない。（Webアプリは他サービスのパスワードではなく、発行されるトークンを使ってアクセスを行う。）また、パスワードをそのアプリ用に作ってもらう必要もない。（Webアプリはトークンを用いて認証サービスのユーザーIDを取得でき、そのユーザーIDにデータを結び付けられる。）最近よく見る「Googleでログイン」「Twitterでログイン」「FaceBookでログイン」「Microsoft Accoutでログイン」などがOAuth認証の例。例えば、「Googleでログイン」を用いると、Googleの認証サービスを用いて、GoogleのパスワードでそのWebアプリに（アカウントを作らずとも）ログインできる。
 - 今回の課題では学習のためこれらのAPIアクセスを手動で実装するが、これは本来**推奨されていない**。Microsoft Identity Platform には ["MSAL"](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/msal-overview)、Microsoft Graph には ["Microsoft Graph Javascript Client Library"](https://github.com/microsoftgraph/msgraph-sdk-javascript) という公式ライブラリが存在しているため、こちらを利用すべきである。
 
 ## Step 4: 認証コードを獲得する
@@ -99,22 +99,22 @@ Microsoft Graph の保持しているデータにアクセスするためには�
     window.open(url, "_self"); // url ページへ遷移
     ```
 
-    - 詳細：https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code
+    - [詳細](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow#request-an-authorization-code)
     - `client_id` は アプリの登録ページのOverviewで確認できる、`Application (client) ID`.
     - `state` は 任意の英数字文字列。実際のプロジェクトでは毎回ランダムに生成する必要がある。今回は適当な文字列を直接書いてよい
     - `code_challenge` は 43文字以上128文字以下の英数字文字列。同じく実際のプロジェクトでは`PKCE`というルールに従い暗号理論に基づいて生成する必要があるが、今回は適当でよい。
-1. テストを行う。ボタンをクリックすると、ページが切り替わり、アプリに権限を与えてよいかのログインページが現れる。ログインすると元のページに戻り、URLに「code」と「state」が付与されていることを確認する。https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow#successful-response
+1. テストを行う。ボタンをクリックすると、ページが切り替わり、アプリに権限を与えてよいかのログインページが現れる。ログインすると元のページに戻り、URLに「code」と「state」が付与されていることを確認する。[詳細](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow#successful-response)
 
 ### Tips
 
-- なお、一度アプリケーションを許可すると、次回以降、認証ページでの確認はスキップされることが多い。元に戻したい場合は、https://account.live.com/consent/Manage にアクセスし、アプリケーションの許可を取り消すと、初期状態に戻る。
+- なお、一度アプリケーションを許可すると、次回以降、認証ページでの確認はスキップされることが多い。元に戻したい場合は、[アプリの管理](https://account.live.com/consent/Manage) にアクセスし、アプリケーションの許可を取り消すと、初期状態に戻る。
 
 ## Step 5: 認証コードを用いて、アクセストークンを獲得する
 
 URL パラメータに「code」と「state」がついている時に、それらを用いて Microsoft Idntity Platform の /token エンドポイントに対して API コールを行い、アクセストークンを取得する。
 
 1. `index.json`のグローバルスコープ（一番外側、onclickの中ではないので注意）で、URLのパラメータに、1. `code` が含まれていて、2. `state` が Step4の `state` と同一の際にtrueとなるif文を開く
-1. そのif文の中で、`fetch`関数を用いてアクセストークンを取得するためのAPIコールを行う。https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow#redeem-a-code-for-an-access-token
+1. そのif文の中で、`fetch`関数を用いてアクセストークンを取得するためのAPIコールを行う。[詳細](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow#redeem-a-code-for-an-access-token)
 
     ```js
     const tokenRequestBody =
