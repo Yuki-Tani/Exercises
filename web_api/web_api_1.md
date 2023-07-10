@@ -55,7 +55,7 @@
 - ローカルサーバーとは何か。普通インターネットのIPアドレスを用いた通信は、アクセス元である「クライアント」（=PC）と、「サーバー」の間で行われる。すなわち、２つの別のマシン間の通信となる。ローカルサーバーは、**クライアントPC**上に作られ、自分自身を指す特別なアドレス（127.0.0.1 == "localhost"）に設置される特別なサーバーで、いわばPCの「独り言」を可能にする。（クライアントはあたかも別マシンのサーバーと通信しているように見せて、その実その通信先も自分自身であるということ。）開発中に２つのマシンを触るのは面倒この上ないので、ローカルサーバーを用いてWebアプリの開発を行い、完成したら別マシンの本番サーバーに配置する、という開発フローを行うことが多い。
 - `npx`コマンドによって、「node module（ノード　モジュール）」と呼ばれるJavaScriptで書かれた公開パッケージ（ライブラリ）を一時的にインストールし、実行できる。これらのモジュールは`node.js`に同梱されている`npm`という名前のパッケージ管理システムで管理される。`http-server`はnpmで管理できる公開パッケージの一つであり、同時に、そのパッケージに含まれるコマンドの名前でもある。(https://www.npmjs.com/package/http-server)　今回はこのライブラリによって、サーバー側のコードを一切書くことなく、ローカルサーバーを立てることができている。興味があればこのライブラリなしでローカルサーバーを自前で書いてみるのも良い勉強になる。
 - 今回は使用しないが、`npm`コマンドというのもある。こちらはパッケージをPCにインストールしたり、アンインストールしたりするのに使う。
-- URLの構造の基本的な知識は得ておくこと。[What is a URL | MDN](https://developer.mozilla.org/ja/docs/Learn/Common_questions/Web_mechanics/What_is_a_URL)
+- URLの構造の基本的な知識は得ておくこと。[What is a URL (MDN)](https://developer.mozilla.org/ja/docs/Learn/Common_questions/Web_mechanics/What_is_a_URL)
 - なぜStep1の"Fileスキームを使った表示ではなく、わざわざローカルサーバーが必要なのか。のちに出てくるAPIのコールにおいて、その返答を受け取るためには「"https"スキームか、`http://localhost`にページがホストされていること」が必須となるためである。
 - ちなみに、ローカルサーバーはコマンド上で`Ctrl + C`で止められる。
 
@@ -66,7 +66,7 @@
 - [Microsoft Identity Platform](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-overview): (login.microsoftonline.com) - Microsoft Account についての認証情報を管理しているサービス。
 - [Microsoft Graph](https://learn.microsoft.com/ja-jp/graph/overview): (graph.microsoft.com) - Microsoft 365 (ユーザーデータ、Word、メール、OneDrive、等々) のデータを管理しているサービス。
 
-Microsoft Graph の保持しているデータにアクセスするためには、Microsoft Identitiy Platform が発行する、アクセス許可「トークン」（token, 有効期限付のパスワードのようなもの）が必要になる。この「トークン」を得るためには様々な方法が提供されているが、今回は「OAuth2.0 認証コードフロー」に従う。[v2 oauth2 code flow | MS docs](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow) を参照。このフローは以下の２ステップからなる。
+Microsoft Graph の保持しているデータにアクセスするためには、Microsoft Identitiy Platform が発行する、アクセス許可「トークン」（token, 有効期限付のパスワードのようなもの）が必要になる。この「トークン」を得るためには様々な方法が提供されているが、今回は「OAuth2.0 認証コードフロー」に従う。[v2 oauth2 code flow (MS docs)](https://learn.microsoft.com/ja-jp/azure/active-directory/develop/v2-oauth2-auth-code-flow) を参照。このフローは以下の２ステップからなる。
 
 1. ユーザーを Microsoft Identity Platform の「ログインページ」にリダイレクト（誘導）し、Web アプリがユーザーのデータにアクセスすることを許可させる。ユーザーがアクセスを許可すると、Microsoft Identity Platform はユーザーをWebアプリのページへとリダイレクトする。その際「認証コード」と呼ばれるユーザー許可が降りた"証"をWeb アプリに渡す。（はいわば「トークン発行許可証」である。）
 1. Web アプリは、 Microsoft Identity Platform に「トークン」の発行をリクエストする。先ほどの「認証コード」を共に送信する必要がある。Microsoft Identity Platform は「トークン」をWeb アプリに返信する。
